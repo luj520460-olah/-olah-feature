@@ -621,8 +621,11 @@
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+    import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
     import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
+    import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
     // ===============================
     // 初始化场景
@@ -1278,8 +1281,23 @@
 
     // ===============================
     // 加载构件模型
+    // 兼容说明：
+    // 有些 GLB 虽然用户没有主动压缩，但模型来源本身可能已经包含 Draco、Meshopt 或 KTX2 贴图扩展。
+    // 普通 GLTFLoader 遇到这些扩展会加载失败，所以这里统一加入解码器。
     // ===============================
     const loader = new GLTFLoader();
+
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/libs/draco/');
+    loader.setDRACOLoader(dracoLoader);
+
+    const ktx2Loader = new KTX2Loader();
+    ktx2Loader.setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/libs/basis/');
+    ktx2Loader.detectSupport(renderer);
+    loader.setKTX2Loader(ktx2Loader);
+
+    loader.setMeshoptDecoder(MeshoptDecoder);
+
     let componentUidCounter = 0;
     let librarySpawnIndex = 0;
 
@@ -1341,6 +1359,37 @@
       root.updateWorldMatrix(true, true);
       const groundBox = new THREE.Box3().setFromObject(root);
       root.position.y -= groundBox.min.y;
+    }
+
+    function getFriendlyLoadError(error) {
+      const message = String(
+        error?.message ||
+        error?.target?.statusText ||
+        error ||
+        '未知错误'
+      );
+
+      if (message.includes('Unexpected token') || message.includes('404')) {
+        return '路径错误或文件未同步';
+      }
+
+      if (message.includes('DRACOLoader') || message.includes('KHR_draco_mesh_compression')) {
+        return '模型需要 Draco 解码器';
+      }
+
+      if (message.includes('MeshoptDecoder') || message.includes('EXT_meshopt_compression')) {
+        return '模型需要 Meshopt 解码器';
+      }
+
+      if (message.includes('KTX2Loader') || message.includes('KHR_texture_basisu')) {
+        return '模型贴图需要 KTX2 解码器';
+      }
+
+      if (message.includes('Invalid') || message.includes('glTF') || message.includes('GLB')) {
+        return '模型文件格式异常';
+      }
+
+      return '模型文件无法解析';
     }
 
     const loadComponent = (url, cnName, options = {}) => {
@@ -1409,8 +1458,9 @@
         hideUploadStatus(1300);
       } catch (error) {
         console.error(error);
-        showUploadStatus('模型加载失败，请检查文件名', 'error');
-        hideUploadStatus(1800);
+        const reason = getFriendlyLoadError(error);
+        showUploadStatus('模型加载失败：' + reason, 'error');
+        hideUploadStatus(2600);
       }
     }
 
