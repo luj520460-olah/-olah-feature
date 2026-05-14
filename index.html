@@ -127,23 +127,56 @@
     }
 
     /* ===============================
-       预设方案库面板
+       预设方案入口按钮 + 弹出式方案列表
        =============================== */
+    .preset-entry {
+      position: absolute;
+      top: 92px;
+      left: 14px;
+      height: 42px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      background: rgba(88, 86, 214, 0.52);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      z-index: 35;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .preset-entry:active {
+      transform: scale(0.96);
+      background: rgba(88, 86, 214, 0.72);
+    }
+
     .preset-panel {
       position: absolute;
-      top: 115px;
-      left: 10px;
-      width: 230px;
-      max-height: 62vh;
+      top: 142px;
+      left: 14px;
+      width: 260px;
+      max-height: 58vh;
       overflow-y: auto;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(0, 0, 0, 0.64);
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 16px;
       padding: 10px;
-      z-index: 30;
-      backdrop-filter: blur(10px);
+      z-index: 34;
+      backdrop-filter: blur(12px);
       color: white;
       touch-action: pan-y;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
+    }
+
+    .preset-panel.hidden {
+      display: none;
     }
 
     .preset-panel::-webkit-scrollbar {
@@ -155,10 +188,29 @@
       border-radius: 10px;
     }
 
+    .preset-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
     .preset-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: bold;
-      margin-bottom: 4px;
+    }
+
+    .preset-close {
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 999px;
+      color: white;
+      background: rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 26px;
       text-align: center;
     }
 
@@ -166,8 +218,7 @@
       font-size: 11px;
       line-height: 1.4;
       color: #bbb;
-      text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
     }
 
     .preset-card {
@@ -175,7 +226,7 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 14px;
       padding: 9px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
     }
 
     .preset-name {
@@ -187,7 +238,7 @@
     .preset-desc {
       font-size: 11px;
       color: #cfcfcf;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       line-height: 1.45;
     }
 
@@ -219,11 +270,11 @@
     }
 
     .use-btn {
-      background: rgba(52, 199, 89, 0.75);
+      background: rgba(52, 199, 89, 0.78);
     }
 
     .download-btn {
-      background: rgba(0, 122, 255, 0.75);
+      background: rgba(0, 122, 255, 0.78);
     }
 
     .panel-tip {
@@ -236,9 +287,18 @@
     }
 
     @media (max-width: 720px) {
+      .preset-entry {
+        top: 86px;
+        left: 12px;
+        height: 38px;
+        padding: 0 12px;
+        font-size: 12px;
+      }
+
       .preset-panel {
-        width: 190px;
-        top: 115px;
+        top: 130px;
+        left: 12px;
+        width: 220px;
         max-height: 52vh;
       }
 
@@ -262,9 +322,14 @@
 
   <input type="file" id="file-input" accept=".json">
 
-  <!-- 预设方案库：用户没思路时可以使用或下载模板 -->
-  <div class="preset-panel">
-    <div class="preset-title">预设方案库</div>
+  <!-- 预设方案库入口：默认只显示按钮，点击后展开方案列表 -->
+  <div class="preset-entry" id="preset-toggle">🏛️<span>预设方案</span></div>
+
+  <div class="preset-panel hidden" id="preset-panel">
+    <div class="preset-header">
+      <div class="preset-title">预设方案库</div>
+      <button class="preset-close" id="preset-close">×</button>
+    </div>
     <div class="preset-subtitle">可一键使用模板，也可下载 JSON 后再次导入</div>
     <div id="preset-list"></div>
     <div class="panel-tip">
@@ -650,6 +715,7 @@
         useBtn.onclick = async () => {
           await waitForComponentsReady();
           applyLayout(preset.layout);
+          closePresetPanel();
           alert('已加载：' + preset.name + '，现在可以继续自由编辑');
         };
 
@@ -662,6 +728,39 @@
     }
 
     renderPresetList();
+
+    // ===============================
+    // 预设方案库展开 / 收起
+    // ===============================
+    const presetToggle = document.getElementById('preset-toggle');
+    const presetPanel = document.getElementById('preset-panel');
+    const presetClose = document.getElementById('preset-close');
+
+    function openPresetPanel() {
+      presetPanel.classList.remove('hidden');
+    }
+
+    function closePresetPanel() {
+      presetPanel.classList.add('hidden');
+    }
+
+    function togglePresetPanel() {
+      presetPanel.classList.toggle('hidden');
+    }
+
+    presetToggle.onclick = event => {
+      event.stopPropagation();
+      togglePresetPanel();
+    };
+
+    presetClose.onclick = event => {
+      event.stopPropagation();
+      closePresetPanel();
+    };
+
+    presetPanel.addEventListener('pointerdown', event => {
+      event.stopPropagation();
+    });
 
     // ===============================
     // 拖拽控制
@@ -685,6 +784,8 @@
     const mouse = new THREE.Vector2();
 
     renderer.domElement.addEventListener('pointerdown', event => {
+      closePresetPanel();
+
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
