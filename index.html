@@ -378,6 +378,7 @@
       width: 318px;
       max-height: 60vh;
       overflow-y: auto;
+      overflow-x: hidden;
       background: rgba(0, 0, 0, 0.66);
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 16px;
@@ -385,8 +386,22 @@
       z-index: 34;
       backdrop-filter: blur(12px);
       color: white;
-      touch-action: pan-y;
+      touch-action: pan-y !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
+    }
+
+    /* 手机 WebView 中，外层 * { touch-action:none } 会让子元素无法正常滑动。
+       这里强制模型库面板及其内部元素允许上下滑动，用户可在列表任意位置拖动，不用拉右侧细滚动条。 */
+    .model-panel,
+    .model-panel * {
+      touch-action: pan-y !important;
+    }
+
+    #model-list {
+      touch-action: pan-y !important;
+      -webkit-overflow-scrolling: touch;
     }
 
     .model-panel.hidden {
@@ -527,8 +542,10 @@
       .model-panel {
         top: 130px;
         left: 12px;
-        width: 280px;
-        max-height: 54vh;
+        right: 12px;
+        width: auto;
+        max-height: 68vh;
+        padding-bottom: 18px;
       }
 
       .model-subtitle,
@@ -1243,6 +1260,14 @@
 
     modelPanel.addEventListener('pointerdown', event => {
       event.stopPropagation();
+    });
+
+    // 手机端优化：模型库展开后，在列表任意区域上下滑动都只滚动列表，
+    // 不触发 3D 场景旋转，也不会误关闭模型库。
+    ['touchstart', 'touchmove', 'pointermove', 'wheel'].forEach(type => {
+      modelPanel.addEventListener(type, event => {
+        event.stopPropagation();
+      }, { passive: true });
     });
 
     // ===============================
