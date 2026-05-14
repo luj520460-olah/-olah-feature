@@ -1623,19 +1623,54 @@
 
     // ===============================
     // 重置
+    // 规则：
+    // 1. 已选中模型时：只把选中模型移动回原点。
+    // 2. 没有选中模型时：删除场景中的所有模型。
     // ===============================
     document.getElementById('reset-btn').onclick = () => {
-      if (!confirm('确定要重置所有构件吗？')) return;
+      const selected = getSelectedComponents();
+
+      // 已选中一个或多个模型：只重置选中模型的位置到原点
+      if (selected.length > 0) {
+        recordState();
+
+        selected.forEach(component => {
+          component.position.set(0, 0, 0);
+        });
+
+        updateSelectionView();
+
+        showUploadStatus(
+          selected.length === 1
+            ? '已将选中模型移回原点'
+            : '已将 ' + selected.length + ' 个选中模型移回原点',
+          'success'
+        );
+        hideUploadStatus(1300);
+        return;
+      }
+
+      // 没有选中模型：删除所有模型
+      if (window.allComponents.length === 0) {
+        showUploadStatus('当前没有可删除的模型', 'loading');
+        hideUploadStatus(1200);
+        return;
+      }
+
+      if (!confirm('当前没有选中模型，是否删除场景中的所有模型？')) {
+        return;
+      }
 
       recordState();
 
-      window.allComponents.forEach(component => {
-        component.position.set(0, 0, 0);
-        component.rotation.set(0, 0, 0);
-        component.scale.set(1, 1, 1);
+      const allModels = [...window.allComponents];
+      allModels.forEach(component => {
+        removeComponent(component);
       });
 
       clearSelection();
+      showUploadStatus('已删除所有模型', 'success');
+      hideUploadStatus(1300);
     };
 
     // ===============================
