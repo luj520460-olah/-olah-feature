@@ -1958,9 +1958,6 @@
     const fileInput = document.getElementById('file-input');
 
     document.getElementById('open-btn').onclick = () => {
-      // 浏览器环境下直接打开本地 JSON；Android APP 中会被原生桥接拦截。
-      showUploadStatus('请选择已保存的 JSON 文件', 'loading');
-      hideUploadStatus(1800);
       fileInput.click();
     };
 
@@ -2101,23 +2098,6 @@
 
     scene.add(new THREE.GridHelper(20, 20, 0x444444, 0x222222));
 
-
-    // ===============================
-    // Android WebView 接口
-    // 供 Android 原生代码保存/恢复 JSON 时调用
-    // ===============================
-    window.getDIYLayoutData = function () {
-      return JSON.stringify(getLayoutData());
-    };
-
-    window.applyDIYLayoutData = async function (jsonText) {
-      const data = typeof jsonText === 'string' ? JSON.parse(jsonText) : jsonText;
-      await applyLayout(data);
-      showUploadStatus('作品恢复完成', 'success');
-      hideUploadStatus(1300);
-      return true;
-    };
-
     // ===============================
     // 渲染循环
     // ===============================
@@ -2129,6 +2109,21 @@
     }
 
     animate();
+
+
+    // ===============================
+    // Android WebView 调用接口
+    // 说明：用于安卓端保存/打开 JSON 时完整恢复模型库动态加载的模型
+    // ===============================
+    window.getDIYLayoutData = function () {
+      return JSON.stringify(getLayoutData());
+    };
+
+    window.applyDIYLayoutData = async function (jsonText) {
+      const data = typeof jsonText === 'string' ? JSON.parse(jsonText) : jsonText;
+      await applyLayout(data);
+      return true;
+    };
 
     window.onresize = () => {
       camera.aspect = window.innerWidth / window.innerHeight;
