@@ -3,247 +3,891 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>3D构件整体控制-全局变量版</title>
+  <title>3D构件DIY搭建平台</title>
   <style>
-    /* 样式保持不变 */
-    * { touch-action: none; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; overflow: hidden; background-color: #1a1a1a; font-family: sans-serif; }
-    canvas { display: block; }
-    .ui-tips { position: absolute; top: 10px; width: 100%; text-align: center; color: #aaa; font-size: 11px; pointer-events: none; z-index: 10; }
-    .address-bar { position: absolute; top: 40px; left: 10px; right: 10px; display: flex; gap: 5px; z-index: 20; }
-    #save-path { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #444; color: #0ff; padding: 8px; border-radius: 8px; font-size: 13px; }
-    #select-tag { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: #ff3b30; color: white; padding: 4px 15px; border-radius: 20px; font-size: 12px; display: none; z-index: 10; }
-    .system-box { position: absolute; bottom: 30px; left: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .control-box { position: absolute; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 10px; }
-    .btn { width: 55px; height: 55px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; color: white; font-size: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-    .btn span { font-size: 10px; margin-top: 2px; }
-    .btn-sys { background: rgba(0, 122, 255, 0.3); } 
-    .btn-open { background: rgba(255, 152, 0, 0.4); } 
-    .btn:active { transform: scale(0.9); background: #ff3b30; }
-    #file-input { display: none; }
+    * {
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      font-family: sans-serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .ui-tips {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: #aaa;
+      font-size: 11px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .address-bar {
+      position: absolute;
+      top: 40px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      gap: 5px;
+      z-index: 20;
+    }
+
+    #save-path {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #444;
+      color: #0ff;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    #select-tag {
+      position: absolute;
+      top: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff3b30;
+      color: white;
+      padding: 4px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      display: none;
+      z-index: 10;
+    }
+
+    .system-box {
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 25;
+    }
+
+    .control-box {
+      position: absolute;
+      bottom: 30px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 25;
+    }
+
+    .btn {
+      width: 55px;
+      height: 55px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn span {
+      font-size: 10px;
+      margin-top: 2px;
+    }
+
+    .btn-sys {
+      background: rgba(0, 122, 255, 0.3);
+    }
+
+    .btn-open {
+      background: rgba(255, 152, 0, 0.4);
+    }
+
+    .btn:active {
+      transform: scale(0.9);
+      background: #ff3b30;
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    /* ===============================
+       预设方案库面板
+       =============================== */
+    .preset-panel {
+      position: absolute;
+      top: 115px;
+      left: 10px;
+      width: 230px;
+      max-height: 62vh;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 10px;
+      z-index: 30;
+      backdrop-filter: blur(10px);
+      color: white;
+      touch-action: pan-y;
+    }
+
+    .preset-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .preset-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+    }
+
+    .preset-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .preset-subtitle {
+      font-size: 11px;
+      line-height: 1.4;
+      color: #bbb;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .preset-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 9px;
+      margin-bottom: 10px;
+    }
+
+    .preset-name {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .preset-desc {
+      font-size: 11px;
+      color: #cfcfcf;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+
+    .preset-meta {
+      display: inline-block;
+      font-size: 10px;
+      color: #92d5ff;
+      background: rgba(0, 122, 255, 0.18);
+      border: 1px solid rgba(0, 122, 255, 0.25);
+      border-radius: 999px;
+      padding: 2px 7px;
+      margin-bottom: 8px;
+    }
+
+    .preset-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .preset-actions button {
+      flex: 1;
+      border: none;
+      border-radius: 9px;
+      padding: 7px 4px;
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .use-btn {
+      background: rgba(52, 199, 89, 0.75);
+    }
+
+    .download-btn {
+      background: rgba(0, 122, 255, 0.75);
+    }
+
+    .panel-tip {
+      font-size: 10px;
+      color: #aaa;
+      line-height: 1.45;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 720px) {
+      .preset-panel {
+        width: 190px;
+        top: 115px;
+        max-height: 52vh;
+      }
+
+      .preset-subtitle,
+      .preset-desc,
+      .panel-tip {
+        font-size: 10px;
+      }
+    }
   </style>
 </head>
+
 <body>
+  <div class="ui-tips">用户自主DIY搭建：可自由编辑，也可使用/下载预设方案</div>
 
-<div class="ui-tips">全局变量模式：支持控制台调试 window.allComponents</div>
+  <div class="address-bar">
+    <input type="text" id="save-path" placeholder="输入保存的文件名" value="我的建筑设计_1">
+  </div>
 
-<div class="address-bar">
-  <input type="text" id="save-path" placeholder="输入保存的文件名" value="我的建筑设计_1">
-</div>
+  <div id="select-tag">已选中：构件整体</div>
 
-<div id="select-tag">已选中：构件整体</div>
+  <input type="file" id="file-input" accept=".json">
 
-<input type="file" id="file-input" accept=".json">
+  <!-- 预设方案库：用户没思路时可以使用或下载模板 -->
+  <div class="preset-panel">
+    <div class="preset-title">预设方案库</div>
+    <div class="preset-subtitle">可一键使用模板，也可下载 JSON 后再次导入</div>
+    <div id="preset-list"></div>
+    <div class="panel-tip">
+      提示：预设方案只是参考模板，加载后仍可继续拖拽、升降、旋转、缩放和保存。
+    </div>
+  </div>
 
-<div class="system-box">
-  <div class="btn btn-sys btn-open" id="open-btn">📂<span>打开</span></div>
-  <div class="btn btn-sys" id="undo-btn">↶<span>撤回</span></div>
-  <div class="btn btn-sys" id="save-btn">💾<span>保存</span></div>
-  <div class="btn btn-sys" id="reset-btn">🔄<span>重置</span></div>
-</div>
+  <div class="system-box">
+    <div class="btn btn-sys btn-open" id="open-btn">📂<span>打开</span></div>
+    <div class="btn btn-sys" id="undo-btn">↶<span>撤回</span></div>
+    <div class="btn btn-sys" id="save-btn">💾<span>保存</span></div>
+    <div class="btn btn-sys" id="reset-btn">🔄<span>重置</span></div>
+  </div>
 
-<div class="control-box">
-  <div class="btn" id="up-btn">▲<span>升</span></div>
-  <div class="btn" id="down-btn">▼<span>降</span></div>
-  <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1)">
-  <div class="btn" id="rotate-btn">↻</div>
-  <div class="btn" id="plus-btn">＋</div>
-  <div class="btn" id="minus-btn">－</div>
-</div>
+  <div class="control-box">
+    <div class="btn" id="up-btn">▲<span>升</span></div>
+    <div class="btn" id="down-btn">▼<span>降</span></div>
+    <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1)">
+    <div class="btn" id="rotate-btn">↻<span>旋转</span></div>
+    <div class="btn" id="plus-btn">＋<span>放大</span></div>
+    <div class="btn" id="minus-btn">－<span>缩小</span></div>
+  </div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.158/build/three.module.js",
-    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
-
-// --- 初始化场景 ---
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1a1a1a);
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(10, 10, 10);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-
-// --- 变量初始化：将 allComponents 定义在 window 上 ---
-window.allComponents = []; 
-const activeSelection = [];
-let currentSelected = null;
-const historyStack = [];
-
-// --- 记录状态 ---
-function recordState() {
-    const state = window.allComponents.map(m => ({
-        name: m.userData.cnName,
-        pos: m.position.clone(),
-        rot: m.rotation.clone(),
-        sca: m.scale.clone()
-    }));
-    historyStack.push(state);
-    if (historyStack.length > 20) historyStack.shift();
-}
-
-// --- 整体变换逻辑 ---
-const dragControls = new DragControls(activeSelection, camera, renderer.domElement);
-dragControls.transformGroup = true; 
-dragControls.addEventListener('dragstart', () => { recordState(); controls.enabled = false; });
-dragControls.addEventListener('dragend', () => controls.enabled = true);
-
-// --- 点击选中 ---
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-renderer.domElement.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    // 使用全局变量进行射线检测
-    const intersects = raycaster.intersectObjects(window.allComponents, true);
-
-    if (intersects.length > 0) {
-        let target = intersects[0].object;
-        while (target.parent && !window.allComponents.includes(target)) target = target.parent;
-        if (window.allComponents.includes(target)) {
-            currentSelected = target;
-            activeSelection.length = 0;
-            activeSelection.push(target);
-            window.allComponents.forEach(m => m.traverse(n => n.isMesh && n.material.emissive?.set(0x000000)));
-            target.traverse(n => n.isMesh && n.material.emissive?.set(0x221111));
-            document.getElementById('select-tag').innerText = "选中：" + target.userData.cnName;
-            document.getElementById('select-tag').style.display = 'block';
-        }
-    } else if (!e.target.closest('.btn') && !e.target.closest('input')) {
-        currentSelected = null;
-        activeSelection.length = 0;
-        window.allComponents.forEach(m => m.traverse(n => n.isMesh && n.material.emissive?.set(0x000000)));
-        document.getElementById('select-tag').style.display = 'none';
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158/build/three.module.js",
+      "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/"
     }
-}, { passive: true });
+  }
+  </script>
 
-// --- 加载构件 ---
-const loader = new GLTFLoader();
-const loadComponent = (url, cnName) => {
-    loader.load(url, (gltf) => {
-        const root = gltf.scene;
-        root.userData.cnName = cnName;
-        scene.add(root);
-        // 存入全局变量
-        window.allComponents.push(root);
-    });
-};
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+    import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
 
-loadComponent('./model/1.glb', '屋顶整体');
-loadComponent('./model/wall.glb', '墙体整体');
-loadComponent('./model/pillar.glb', '柱子整体');
-loadComponent('./model/dougong.glb', '斗拱整体');
-loadComponent('./model/xiangulou.glb', '西安鼓楼');
-loadComponent('./model/xiaopingfang.glb', '小平房');
-  
-// --- 功能1：保存到文件 ---
-document.getElementById('save-btn').onclick = () => {
-    const fileName = document.getElementById('save-path').value || "未命名设计";
-    const layoutData = window.allComponents.map(m => ({
+    // ===============================
+    // 初始化场景
+    // ===============================
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a1a);
+
+    const camera = new THREE.PerspectiveCamera(
+      60,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.set(10, 10, 10);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    // ===============================
+    // 全局变量
+    // ===============================
+    window.allComponents = [];
+    const activeSelection = [];
+    let currentSelected = null;
+    const historyStack = [];
+    const EXPECTED_COMPONENT_COUNT = 6;
+
+    // ===============================
+    // 预设方案数据
+    // 说明：
+    // 1. 这里直接把方案写在 index.html 内部，不需要额外创建 presets 文件夹。
+    // 2. “使用”按钮会把布局应用到当前场景。
+    // 3. “下载”按钮会把该方案导出为 JSON 文件。
+    // 4. 你以后可以先手动摆好模型，点击“保存”，再把保存出的 JSON 复制到这里。
+    // ===============================
+    const PRESET_LIST = [
+      {
+        id: 'gulou_basic',
+        name: '鼓楼基础方案',
+        desc: '适合初学者参考的古建筑组合模板，加载后可继续自由修改。',
+        meta: '古建筑参考',
+        fileName: '鼓楼基础方案.json',
+        layout: [
+          {
+            name: '屋顶整体',
+            pos: { x: 0, y: 3.2, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 1, y: 1, z: 1 }
+          },
+          {
+            name: '墙体整体',
+            pos: { x: 0, y: 1.2, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 1, y: 1, z: 1 }
+          },
+          {
+            name: '柱子整体',
+            pos: { x: -2.2, y: 0, z: -2.2 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 1, y: 1, z: 1 }
+          },
+          {
+            name: '斗拱整体',
+            pos: { x: -2.2, y: 2.1, z: -2.2 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 1, y: 1, z: 1 }
+          },
+          {
+            name: '西安鼓楼',
+            pos: { x: 3.8, y: 0, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '小平房',
+            pos: { x: -4.0, y: 0, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.75, y: 0.75, z: 0.75 }
+          }
+        ]
+      },
+      {
+        id: 'house_basic',
+        name: '小平房方案',
+        desc: '更简单的房屋组合模板，适合快速进入 DIY 编辑状态。',
+        meta: '入门模板',
+        fileName: '小平房方案.json',
+        layout: [
+          {
+            name: '屋顶整体',
+            pos: { x: 0, y: 2.5, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '墙体整体',
+            pos: { x: 0, y: 1.0, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '柱子整体',
+            pos: { x: -1.6, y: 0, z: -1.6 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.7, y: 0.7, z: 0.7 }
+          },
+          {
+            name: '斗拱整体',
+            pos: { x: -1.6, y: 1.75, z: -1.6 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.7, y: 0.7, z: 0.7 }
+          },
+          {
+            name: '西安鼓楼',
+            pos: { x: 4.0, y: 0, z: 0 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.6, y: 0.6, z: 0.6 }
+          },
+          {
+            name: '小平房',
+            pos: { x: 0, y: 0, z: 3.5 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 1, y: 1, z: 1 }
+          }
+        ]
+      },
+      {
+        id: 'free_start',
+        name: '自由搭建起始方案',
+        desc: '把所有构件分散摆开，方便用户从零开始选择和拼装。',
+        meta: '自由创作',
+        fileName: '自由搭建起始方案.json',
+        layout: [
+          {
+            name: '屋顶整体',
+            pos: { x: -4, y: 0, z: -3 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '墙体整体',
+            pos: { x: 0, y: 0, z: -3 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '柱子整体',
+            pos: { x: 4, y: 0, z: -3 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '斗拱整体',
+            pos: { x: -4, y: 0, z: 2.5 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.8, y: 0.8, z: 0.8 }
+          },
+          {
+            name: '西安鼓楼',
+            pos: { x: 0, y: 0, z: 2.5 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.7, y: 0.7, z: 0.7 }
+          },
+          {
+            name: '小平房',
+            pos: { x: 4, y: 0, z: 2.5 },
+            rot: { x: 0, y: 0, z: 0 },
+            sca: { x: 0.7, y: 0.7, z: 0.7 }
+          }
+        ]
+      }
+    ];
+
+    // ===============================
+    // 工具函数
+    // ===============================
+    function getLayoutData() {
+      return window.allComponents.map(m => ({
         name: m.userData.cnName,
         pos: { x: m.position.x, y: m.position.y, z: m.position.z },
         rot: { x: m.rotation.x, y: m.rotation.y, z: m.rotation.z },
         sca: { x: m.scale.x, y: m.scale.y, z: m.scale.z }
-    }));
+      }));
+    }
 
-    const blob = new Blob([JSON.stringify(layoutData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName + ".json";
-    link.click();
-    URL.revokeObjectURL(url);
-    alert('保存成功');
-};
+    function recordState() {
+      const state = window.allComponents.map(m => ({
+        name: m.userData.cnName,
+        pos: m.position.clone(),
+        rot: m.rotation.clone(),
+        sca: m.scale.clone()
+      }));
 
-// --- 功能2：打开文件 ---
-const fileInput = document.getElementById('file-input');
-document.getElementById('open-btn').onclick = () => fileInput.click();
+      historyStack.push(state);
 
-fileInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        try {
-            const data = JSON.parse(event.target.result);
-            recordState();
-            data.forEach(savedItem => {
-                const component = window.allComponents.find(m => m.userData.cnName === savedItem.name);
-                if (component) {
-                    component.position.set(savedItem.pos.x, savedItem.pos.y, savedItem.pos.z);
-                    component.rotation.set(savedItem.rot.x, savedItem.rot.y, savedItem.rot.z);
-                    component.scale.set(savedItem.sca.x, savedItem.sca.y, savedItem.sca.z);
-                }
-            });
-            alert('读取成功');
-        } catch (err) { alert('文件错误'); }
-        fileInput.value = "";
-    };
-    reader.readAsText(file);
-};
+      if (historyStack.length > 20) {
+        historyStack.shift();
+      }
+    }
 
-// --- 撤回逻辑 ---
-document.getElementById('undo-btn').onclick = () => {
-    if (historyStack.length === 0) return;
-    const last = historyStack.pop();
-    last.forEach(item => {
-        const target = window.allComponents.find(m => m.userData.cnName === item.name);
-        if (target) {
-            target.position.copy(item.pos);
-            target.rotation.copy(item.rot);
-            target.scale.copy(item.sca);
+    function waitForComponentsReady(timeout = 6000) {
+      return new Promise(resolve => {
+        const startTime = Date.now();
+
+        const timer = setInterval(() => {
+          if (
+            window.allComponents.length >= EXPECTED_COMPONENT_COUNT ||
+            Date.now() - startTime > timeout
+          ) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 100);
+      });
+    }
+
+    function applyLayout(layoutData) {
+      recordState();
+
+      const notFound = [];
+
+      layoutData.forEach(savedItem => {
+        const component = window.allComponents.find(
+          m => m.userData.cnName === savedItem.name
+        );
+
+        if (component) {
+          component.position.set(
+            savedItem.pos.x,
+            savedItem.pos.y,
+            savedItem.pos.z
+          );
+
+          component.rotation.set(
+            savedItem.rot.x,
+            savedItem.rot.y,
+            savedItem.rot.z
+          );
+
+          component.scale.set(
+            savedItem.sca.x,
+            savedItem.sca.y,
+            savedItem.sca.z
+          );
+        } else {
+          notFound.push(savedItem.name);
         }
+      });
+
+      if (notFound.length > 0) {
+        alert('以下构件没有找到：' + notFound.join('、'));
+      }
+    }
+
+    function downloadJsonFile(data, fileName) {
+      const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: 'application/json' }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    }
+
+    function setHighlight(target, color) {
+      target.traverse(node => {
+        if (!node.isMesh || !node.material) return;
+
+        const materials = Array.isArray(node.material)
+          ? node.material
+          : [node.material];
+
+        materials.forEach(mat => {
+          if (mat.emissive) {
+            mat.emissive.set(color);
+          }
+        });
+      });
+    }
+
+    function clearSelection() {
+      currentSelected = null;
+      activeSelection.length = 0;
+
+      window.allComponents.forEach(component => {
+        setHighlight(component, 0x000000);
+      });
+
+      document.getElementById('select-tag').style.display = 'none';
+    }
+
+    function selectComponent(target) {
+      currentSelected = target;
+      activeSelection.length = 0;
+      activeSelection.push(target);
+
+      window.allComponents.forEach(component => {
+        setHighlight(component, 0x000000);
+      });
+
+      setHighlight(target, 0x221111);
+
+      document.getElementById('select-tag').innerText =
+        '选中：' + target.userData.cnName;
+
+      document.getElementById('select-tag').style.display = 'block';
+    }
+
+    // ===============================
+    // 预设方案库渲染
+    // ===============================
+    function renderPresetList() {
+      const list = document.getElementById('preset-list');
+      list.innerHTML = '';
+
+      PRESET_LIST.forEach(preset => {
+        const card = document.createElement('div');
+        card.className = 'preset-card';
+
+        card.innerHTML = `
+          <div class="preset-name">${preset.name}</div>
+          <div class="preset-desc">${preset.desc}</div>
+          <div class="preset-meta">${preset.meta}</div>
+          <div class="preset-actions">
+            <button class="use-btn">使用</button>
+            <button class="download-btn">下载</button>
+          </div>
+        `;
+
+        const useBtn = card.querySelector('.use-btn');
+        const downloadBtn = card.querySelector('.download-btn');
+
+        useBtn.onclick = async () => {
+          await waitForComponentsReady();
+          applyLayout(preset.layout);
+          alert('已加载：' + preset.name + '，现在可以继续自由编辑');
+        };
+
+        downloadBtn.onclick = () => {
+          downloadJsonFile(preset.layout, preset.fileName);
+        };
+
+        list.appendChild(card);
+      });
+    }
+
+    renderPresetList();
+
+    // ===============================
+    // 拖拽控制
+    // ===============================
+    const dragControls = new DragControls(activeSelection, camera, renderer.domElement);
+    dragControls.transformGroup = true;
+
+    dragControls.addEventListener('dragstart', () => {
+      recordState();
+      controls.enabled = false;
     });
-};
 
-document.getElementById('reset-btn').onclick = () => {
-    if(!confirm('重置吗？')) return;
-    window.allComponents.forEach(m => { m.position.set(0,0,0); m.rotation.set(0,0,0); m.scale.set(1,1,1); });
-};
+    dragControls.addEventListener('dragend', () => {
+      controls.enabled = true;
+    });
 
-// --- 操作按钮逻辑 ---
-const step = 0.2;
-document.getElementById('up-btn').onclick = () => { if(currentSelected){ recordState(); currentSelected.position.y += step; } };
-document.getElementById('down-btn').onclick = () => { if(currentSelected){ recordState(); currentSelected.position.y -= step; } };
-document.getElementById('rotate-btn').onclick = () => { if(currentSelected){ recordState(); currentSelected.rotation.y += Math.PI/2; } };
-document.getElementById('plus-btn').onclick = () => { if(currentSelected){ recordState(); currentSelected.scale.multiplyScalar(1.1); } };
-document.getElementById('minus-btn').onclick = () => { if(currentSelected){ recordState(); currentSelected.scale.divideScalar(1.1); } };
+    // ===============================
+    // 点击/触摸选中
+    // ===============================
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
 
-// --- 渲染 ---
-scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-const sun = new THREE.DirectionalLight(0xffffff, 0.8);
-sun.position.set(5, 10, 7);
-scene.add(sun);
-scene.add(new THREE.GridHelper(20, 20, 0x444444, 0x222222));
+    renderer.domElement.addEventListener('pointerdown', event => {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
-animate();
+      raycaster.setFromCamera(mouse, camera);
 
-window.onresize = () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-};
-</script>
+      const intersects = raycaster.intersectObjects(window.allComponents, true);
+
+      if (intersects.length > 0) {
+        let target = intersects[0].object;
+
+        while (target.parent && !window.allComponents.includes(target)) {
+          target = target.parent;
+        }
+
+        if (window.allComponents.includes(target)) {
+          selectComponent(target);
+        }
+      } else {
+        clearSelection();
+      }
+    });
+
+    // ===============================
+    // 加载构件模型
+    // ===============================
+    const loader = new GLTFLoader();
+
+    const loadComponent = (url, cnName) => {
+      loader.load(
+        url,
+        gltf => {
+          const root = gltf.scene;
+          root.userData.cnName = cnName;
+          scene.add(root);
+          window.allComponents.push(root);
+        },
+        undefined,
+        error => {
+          console.error('模型加载失败：', cnName, url, error);
+          alert('模型加载失败：' + cnName + '，请检查 model 文件夹里的文件名');
+        }
+      );
+    };
+
+    loadComponent('./model/1.glb', '屋顶整体');
+    loadComponent('./model/wall.glb', '墙体整体');
+    loadComponent('./model/pillar.glb', '柱子整体');
+    loadComponent('./model/dougong.glb', '斗拱整体');
+    loadComponent('./model/xiangulou.glb', '西安鼓楼');
+    loadComponent('./model/xiaopingfang.glb', '小平房');
+
+    // ===============================
+    // 保存当前作品为 JSON
+    // ===============================
+    document.getElementById('save-btn').onclick = () => {
+      const fileName = document.getElementById('save-path').value || '未命名设计';
+      downloadJsonFile(getLayoutData(), fileName + '.json');
+      alert('保存成功');
+    };
+
+    // ===============================
+    // 打开本地 JSON 文件
+    // ===============================
+    const fileInput = document.getElementById('file-input');
+
+    document.getElementById('open-btn').onclick = () => {
+      fileInput.click();
+    };
+
+    fileInput.onchange = event => {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = async readEvent => {
+        try {
+          await waitForComponentsReady();
+
+          const data = JSON.parse(readEvent.target.result);
+          applyLayout(data);
+
+          alert('读取成功，可以继续自由编辑');
+        } catch (error) {
+          console.error(error);
+          alert('文件错误，请确认导入的是本系统保存的 JSON 方案文件');
+        }
+
+        fileInput.value = '';
+      };
+
+      reader.readAsText(file);
+    };
+
+    // ===============================
+    // 撤回
+    // ===============================
+    document.getElementById('undo-btn').onclick = () => {
+      if (historyStack.length === 0) {
+        alert('没有可撤回的操作');
+        return;
+      }
+
+      const last = historyStack.pop();
+
+      last.forEach(item => {
+        const target = window.allComponents.find(
+          m => m.userData.cnName === item.name
+        );
+
+        if (target) {
+          target.position.copy(item.pos);
+          target.rotation.copy(item.rot);
+          target.scale.copy(item.sca);
+        }
+      });
+    };
+
+    // ===============================
+    // 重置
+    // ===============================
+    document.getElementById('reset-btn').onclick = () => {
+      if (!confirm('确定要重置所有构件吗？')) return;
+
+      recordState();
+
+      window.allComponents.forEach(component => {
+        component.position.set(0, 0, 0);
+        component.rotation.set(0, 0, 0);
+        component.scale.set(1, 1, 1);
+      });
+
+      clearSelection();
+    };
+
+    // ===============================
+    // 操作按钮
+    // ===============================
+    const step = 0.2;
+
+    document.getElementById('up-btn').onclick = () => {
+      if (currentSelected) {
+        recordState();
+        currentSelected.position.y += step;
+      }
+    };
+
+    document.getElementById('down-btn').onclick = () => {
+      if (currentSelected) {
+        recordState();
+        currentSelected.position.y -= step;
+      }
+    };
+
+    document.getElementById('rotate-btn').onclick = () => {
+      if (currentSelected) {
+        recordState();
+        currentSelected.rotation.y += Math.PI / 2;
+      }
+    };
+
+    document.getElementById('plus-btn').onclick = () => {
+      if (currentSelected) {
+        recordState();
+        currentSelected.scale.multiplyScalar(1.1);
+      }
+    };
+
+    document.getElementById('minus-btn').onclick = () => {
+      if (currentSelected) {
+        recordState();
+        currentSelected.scale.divideScalar(1.1);
+      }
+    };
+
+    // ===============================
+    // 光照与辅助网格
+    // ===============================
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+
+    const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+    sun.position.set(5, 10, 7);
+    scene.add(sun);
+
+    scene.add(new THREE.GridHelper(20, 20, 0x444444, 0x222222));
+
+    // ===============================
+    // 渲染循环
+    // ===============================
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.onresize = () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+  </script>
 </body>
 </html>
