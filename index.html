@@ -748,11 +748,11 @@
         category: '古建筑模型',
         models: [
           { name: '小平房', desc: '简易房屋参考模型', url: './model/xiaopingfang.glb' },
-          { name: '古建3', desc: '古建筑组合模型', url: './model/gujian3.glb' },
-          { name: '古建4', desc: '古建筑组合模型', url: './model/gujian4.glb' },
-          { name: '古建5', desc: '古建筑组合模型', url: './model/gujian5.glb' },
-          { name: '古建6', desc: '古建筑组合模型', url: './model/gujian6.glb' },
-          { name: '古建7', desc: '古建筑组合模型', url: './model/gujian7.glb' }
+          { name: '古建3', desc: '古建筑组合模型', url: './model/gujian3.glb', targetSize: 5 },
+          { name: '古建4', desc: '古建筑组合模型', url: './model/gujian4.glb', targetSize: 5 },
+          { name: '古建5', desc: '古建筑组合模型', url: './model/gujian5.glb', targetSize: 5 },
+          { name: '古建6', desc: '古建筑组合模型', url: './model/gujian6.glb', targetSize: 5 },
+          { name: '古建7', desc: '古建筑组合模型', url: './model/gujian7.glb', targetSize: 5 }
         ]
       },
       {
@@ -1310,6 +1310,39 @@
       return sameCount === 0 ? baseName : baseName + '-' + (sameCount + 1);
     }
 
+    // 自动整理模型：解决模型加载后看不见、太大、太小、跑偏的问题
+    function normalizeModel(root, targetSize = 3) {
+      root.updateWorldMatrix(true, true);
+
+      const box = new THREE.Box3().setFromObject(root);
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+
+      box.getSize(size);
+      box.getCenter(center);
+
+      const maxSide = Math.max(size.x, size.y, size.z);
+
+      if (maxSide > 0) {
+        const scale = targetSize / maxSide;
+        root.scale.multiplyScalar(scale);
+      }
+
+      // 缩放后重新计算包围盒，把模型移动到原点附近
+      root.updateWorldMatrix(true, true);
+      const newBox = new THREE.Box3().setFromObject(root);
+      const newCenter = new THREE.Vector3();
+      newBox.getCenter(newCenter);
+
+      root.position.x -= newCenter.x;
+      root.position.z -= newCenter.z;
+
+      // 让模型底部贴近地面 y=0
+      root.updateWorldMatrix(true, true);
+      const groundBox = new THREE.Box3().setFromObject(root);
+      root.position.y -= groundBox.min.y;
+    }
+
     const loadComponent = (url, cnName, options = {}) => {
       return new Promise((resolve, reject) => {
         loader.load(
@@ -1322,8 +1355,11 @@
             root.userData.baseName = options.baseName || cnName;
             root.userData.modelUrl = url;
 
+            // 关键修改：所有模型加载后自动居中、缩放、落地
+            normalizeModel(root, options.targetSize || 3);
+
             if (options.position) {
-              root.position.copy(options.position);
+              root.position.add(options.position);
             }
 
             if (options.rotation) {
@@ -1331,7 +1367,7 @@
             }
 
             if (options.scale) {
-              root.scale.copy(options.scale);
+              root.scale.multiply(options.scale);
             }
 
             scene.add(root);
@@ -1339,7 +1375,14 @@
 
             resolve(root);
           },
-          undefined,
+          xhr => {
+            if (xhr.total) {
+              const percent = Math.round((xhr.loaded / xhr.total) * 100);
+              showUploadStatus('模型加载中... ' + percent + '%', 'loading');
+            } else {
+              showUploadStatus('模型加载中...', 'loading');
+            }
+          },
           error => {
             console.error('模型加载失败：', cnName, url, error);
             reject(error);
@@ -1356,7 +1399,8 @@
         const instanceName = makeUniqueComponentName(modelItem.name);
         const component = await loadComponent(modelItem.url, instanceName, {
           baseName: modelItem.name,
-          position: getNextLibrarySpawnPosition()
+          position: getNextLibrarySpawnPosition(),
+          targetSize: modelItem.targetSize || 3
         });
 
         selectComponent(component);
@@ -1374,7 +1418,8 @@
     loadComponent('./model/xiaopingfang.glb', '小平房', {
       baseName: '小平房',
       position: new THREE.Vector3(0, 0, 0),
-      scale: new THREE.Vector3(1, 1, 1)
+      scale: new THREE.Vector3(1, 1, 1),
+      targetSize: 5
     }).catch(error => {
       alert('模型加载失败：小平房，请检查 model/xiaopingfang.glb');
     });
