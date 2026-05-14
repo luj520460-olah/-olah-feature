@@ -325,6 +325,160 @@
       margin-top: 4px;
     }
 
+
+
+    /* ===============================
+       模型库入口按钮 + 弹出式模型列表
+       =============================== */
+    .model-entry {
+      position: absolute;
+      top: 92px;
+      left: 138px;
+      height: 42px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: white;
+      font-size: 13px;
+      font-weight: bold;
+      background: rgba(0, 150, 136, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      z-index: 35;
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .model-entry:active {
+      transform: scale(0.96);
+      background: rgba(0, 150, 136, 0.76);
+    }
+
+    .model-panel {
+      position: absolute;
+      top: 142px;
+      left: 14px;
+      width: 318px;
+      max-height: 60vh;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.66);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 10px;
+      z-index: 34;
+      backdrop-filter: blur(12px);
+      color: white;
+      touch-action: pan-y;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
+    }
+
+    .model-panel.hidden {
+      display: none;
+    }
+
+    .model-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .model-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+    }
+
+    .model-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .model-title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .model-close {
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 999px;
+      color: white;
+      background: rgba(255, 255, 255, 0.12);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .model-subtitle {
+      font-size: 11px;
+      line-height: 1.4;
+      color: #bbb;
+      margin-bottom: 9px;
+    }
+
+    .model-category {
+      margin-top: 10px;
+    }
+
+    .model-category:first-child {
+      margin-top: 0;
+    }
+
+    .model-category-title {
+      font-size: 12px;
+      color: #9ee7ff;
+      font-weight: bold;
+      margin: 8px 0 7px;
+      padding-left: 2px;
+    }
+
+    .model-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 13px;
+      padding: 9px;
+      margin-bottom: 8px;
+    }
+
+    .model-name {
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+
+    .model-desc {
+      font-size: 10px;
+      color: #cfcfcf;
+      line-height: 1.4;
+    }
+
+    .model-load-btn {
+      min-width: 54px;
+      height: 32px;
+      border: none;
+      border-radius: 9px;
+      color: white;
+      background: rgba(52, 199, 89, 0.78);
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .upload-status.error {
+      color: #ffb3b3;
+    }
+
     @media (max-width: 720px) {
       .preset-entry {
         top: 86px;
@@ -348,6 +502,27 @@
         padding: 9px 12px;
         font-size: 12px;
       }
+
+      .model-entry {
+        top: 86px;
+        left: 128px;
+        height: 38px;
+        padding: 0 12px;
+        font-size: 12px;
+      }
+
+      .model-panel {
+        top: 130px;
+        left: 12px;
+        width: 280px;
+        max-height: 54vh;
+      }
+
+      .model-subtitle,
+      .model-desc {
+        font-size: 10px;
+      }
+
 
       .preset-subtitle,
       .preset-desc,
@@ -385,6 +560,22 @@
       提示：预设方案只是参考模板，加载后仍可继续拖拽、升降、旋转、缩放和保存。
     </div>
   </div>
+
+  <!-- 模型库入口：点击后显示分类模型，用户可按需加载到场景中 -->
+  <div class="model-entry" id="model-toggle">🧩<span>模型库</span></div>
+
+  <div class="model-panel hidden" id="model-panel">
+    <div class="model-header">
+      <div class="model-title">模型库</div>
+      <button class="model-close" id="model-close">×</button>
+    </div>
+    <div class="model-subtitle">按类别选择模型，点击“加载”后会加入当前场景，可继续拖拽、旋转、缩放和保存。</div>
+    <div id="model-list"></div>
+    <div class="panel-tip">
+      提示：这里是按需加载，不会一开始把所有大模型都加载进网页，后期更适合扩展大量模型。
+    </div>
+  </div>
+
 
   <div class="system-box">
     <div class="btn btn-sys btn-open" id="open-btn">📂<span>打开</span></div>
@@ -595,12 +786,58 @@
       }
     ];
 
+
+
+    // ===============================
+    // 模型库数据
+    // 说明：
+    // 1. category 是分类名称，会显示在模型库中。
+    // 2. name 是加载到场景后的名称。
+    // 3. url 必须和 GitHub 仓库 model 文件夹里的文件名完全一致。
+    // 4. 新增模型时，只需要在下面继续添加一项即可。
+    // ===============================
+    const MODEL_LIBRARY = [
+      {
+        category: '基础构件',
+        models: [
+          { name: '屋顶整体', desc: '基础屋顶构件', url: './model/1.glb' },
+          { name: '墙体整体', desc: '基础墙体构件', url: './model/wall.glb' },
+          { name: '柱子整体', desc: '基础柱类构件', url: './model/pillar.glb' },
+          { name: '斗拱整体', desc: '基础斗拱构件', url: './model/dougong.glb' }
+        ]
+      },
+      {
+        category: '古建筑模型',
+        models: [
+          { name: '西安鼓楼', desc: '完整古建筑参考模型', url: './model/xiangulou.glb' },
+          { name: '小平房', desc: '简易房屋参考模型', url: './model/xiaopingfang.glb' },
+          { name: '古建3', desc: '古建筑组合模型', url: './model/古建3.glb' },
+          { name: '古建4', desc: '古建筑组合模型', url: './model/古建4.glb' },
+          { name: '古建5', desc: '古建筑组合模型', url: './model/古建5.glb' },
+          { name: '古建6', desc: '古建筑组合模型', url: './model/古建6.glb' },
+          { name: '古建7', desc: '古建筑组合模型', url: './model/古建7.glb' }
+        ]
+      },
+      {
+        category: '装饰与家具',
+        models: [
+          { name: '墙', desc: '可用于围合或背景装饰', url: './model/墙.glb' },
+          { name: '家具', desc: '室内或场景陈设模型', url: './model/家具.glb' },
+          { name: '斗拱', desc: '装饰斗拱模型', url: './model/斗拱.glb' },
+          { name: '柱', desc: '装饰柱模型', url: './model/柱.glb' }
+        ]
+      }
+    ];
+
     // ===============================
     // 工具函数
     // ===============================
     function getLayoutData() {
       return window.allComponents.map(m => ({
+        uid: m.userData.uid || '',
         name: m.userData.cnName,
+        baseName: m.userData.baseName || m.userData.cnName,
+        modelUrl: m.userData.modelUrl || '',
         pos: { x: m.position.x, y: m.position.y, z: m.position.z },
         rot: { x: m.rotation.x, y: m.rotation.y, z: m.rotation.z },
         sca: { x: m.scale.x, y: m.scale.y, z: m.scale.z }
@@ -609,6 +846,7 @@
 
     function recordState() {
       const state = window.allComponents.map(m => ({
+        uid: m.userData.uid || '',
         name: m.userData.cnName,
         pos: m.position.clone(),
         rot: m.rotation.clone(),
@@ -638,15 +876,37 @@
       });
     }
 
-    function applyLayout(layoutData) {
+    async function applyLayout(layoutData) {
       recordState();
 
       const notFound = [];
 
-      layoutData.forEach(savedItem => {
-        const component = window.allComponents.find(
-          m => m.userData.cnName === savedItem.name
-        );
+      for (const savedItem of layoutData) {
+        let component = null;
+
+        if (savedItem.uid) {
+          component = window.allComponents.find(
+            m => m.userData.uid === savedItem.uid
+          );
+        }
+
+        if (!component) {
+          component = window.allComponents.find(
+            m => m.userData.cnName === savedItem.name
+          );
+        }
+
+        // 如果是从模型库新增后保存的模型，而当前场景里还没有，则根据 modelUrl 自动重新加载。
+        if (!component && savedItem.modelUrl) {
+          try {
+            component = await loadComponent(savedItem.modelUrl, savedItem.name, {
+              baseName: savedItem.baseName || savedItem.name,
+              uid: savedItem.uid || createComponentUid()
+            });
+          } catch (error) {
+            console.error('布局中的模型加载失败：', savedItem, error);
+          }
+        }
 
         if (component) {
           component.position.set(
@@ -669,7 +929,7 @@
         } else {
           notFound.push(savedItem.name);
         }
-      });
+      }
 
       if (notFound.length > 0) {
         alert('以下构件没有找到：' + notFound.join('、'));
@@ -764,7 +1024,7 @@
 
         useBtn.onclick = async () => {
           await waitForComponentsReady();
-          applyLayout(preset.layout);
+          await applyLayout(preset.layout);
           closePresetPanel();
           alert('已加载：' + preset.name + '，现在可以继续自由编辑');
         };
@@ -788,6 +1048,7 @@
 
     function openPresetPanel() {
       presetPanel.classList.remove('hidden');
+      closeModelPanel();
     }
 
     function closePresetPanel() {
@@ -795,7 +1056,13 @@
     }
 
     function togglePresetPanel() {
-      presetPanel.classList.toggle('hidden');
+      const isHidden = presetPanel.classList.contains('hidden');
+      closeModelPanel();
+      if (isHidden) {
+        presetPanel.classList.remove('hidden');
+      } else {
+        presetPanel.classList.add('hidden');
+      }
     }
 
     presetToggle.onclick = event => {
@@ -809,6 +1076,88 @@
     };
 
     presetPanel.addEventListener('pointerdown', event => {
+      event.stopPropagation();
+    });
+
+
+
+    // ===============================
+    // 模型库渲染
+    // ===============================
+    function renderModelList() {
+      const list = document.getElementById('model-list');
+      list.innerHTML = '';
+
+      MODEL_LIBRARY.forEach(group => {
+        const section = document.createElement('div');
+        section.className = 'model-category';
+
+        const title = document.createElement('div');
+        title.className = 'model-category-title';
+        title.textContent = group.category;
+        section.appendChild(title);
+
+        group.models.forEach(modelItem => {
+          const card = document.createElement('div');
+          card.className = 'model-card';
+
+          card.innerHTML = `
+            <div>
+              <div class="model-name">${modelItem.name}</div>
+              <div class="model-desc">${modelItem.desc}</div>
+            </div>
+            <button class="model-load-btn">加载</button>
+          `;
+
+          const loadBtn = card.querySelector('.model-load-btn');
+          loadBtn.onclick = () => loadLibraryModel(modelItem);
+
+          section.appendChild(card);
+        });
+
+        list.appendChild(section);
+      });
+    }
+
+    renderModelList();
+
+    // ===============================
+    // 模型库展开 / 收起
+    // ===============================
+    const modelToggle = document.getElementById('model-toggle');
+    const modelPanel = document.getElementById('model-panel');
+    const modelClose = document.getElementById('model-close');
+
+    function openModelPanel() {
+      modelPanel.classList.remove('hidden');
+      closePresetPanel();
+    }
+
+    function closeModelPanel() {
+      modelPanel.classList.add('hidden');
+    }
+
+    function toggleModelPanel() {
+      const isHidden = modelPanel.classList.contains('hidden');
+      closePresetPanel();
+      if (isHidden) {
+        modelPanel.classList.remove('hidden');
+      } else {
+        modelPanel.classList.add('hidden');
+      }
+    }
+
+    modelToggle.onclick = event => {
+      event.stopPropagation();
+      toggleModelPanel();
+    };
+
+    modelClose.onclick = event => {
+      event.stopPropagation();
+      closeModelPanel();
+    };
+
+    modelPanel.addEventListener('pointerdown', event => {
       event.stopPropagation();
     });
 
@@ -835,6 +1184,7 @@
 
     renderer.domElement.addEventListener('pointerdown', event => {
       closePresetPanel();
+      closeModelPanel();
 
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -862,30 +1212,113 @@
     // 加载构件模型
     // ===============================
     const loader = new GLTFLoader();
+    let componentUidCounter = 0;
+    let librarySpawnIndex = 0;
 
-    const loadComponent = (url, cnName) => {
-      loader.load(
-        url,
-        gltf => {
-          const root = gltf.scene;
-          root.userData.cnName = cnName;
-          scene.add(root);
-          window.allComponents.push(root);
-        },
-        undefined,
-        error => {
-          console.error('模型加载失败：', cnName, url, error);
-          alert('模型加载失败：' + cnName + '，请检查 model 文件夹里的文件名');
-        }
+    function createComponentUid() {
+      componentUidCounter += 1;
+      return 'component-' + Date.now() + '-' + componentUidCounter;
+    }
+
+    function getNextLibrarySpawnPosition() {
+      const col = librarySpawnIndex % 4;
+      const row = Math.floor(librarySpawnIndex / 4);
+      librarySpawnIndex += 1;
+
+      return new THREE.Vector3(
+        -3.6 + col * 2.4,
+        0,
+        -4.8 + row * 2.4
       );
+    }
+
+    function makeUniqueComponentName(baseName) {
+      const sameCount = window.allComponents.filter(component =>
+        component.userData.baseName === baseName ||
+        component.userData.cnName === baseName ||
+        component.userData.cnName.startsWith(baseName + '-')
+      ).length;
+
+      return sameCount === 0 ? baseName : baseName + '-' + (sameCount + 1);
+    }
+
+    const loadComponent = (url, cnName, options = {}) => {
+      return new Promise((resolve, reject) => {
+        loader.load(
+          url,
+          gltf => {
+            const root = gltf.scene;
+
+            root.userData.uid = options.uid || createComponentUid();
+            root.userData.cnName = cnName;
+            root.userData.baseName = options.baseName || cnName;
+            root.userData.modelUrl = url;
+
+            if (options.position) {
+              root.position.copy(options.position);
+            }
+
+            if (options.rotation) {
+              root.rotation.copy(options.rotation);
+            }
+
+            if (options.scale) {
+              root.scale.copy(options.scale);
+            }
+
+            scene.add(root);
+            window.allComponents.push(root);
+
+            resolve(root);
+          },
+          undefined,
+          error => {
+            console.error('模型加载失败：', cnName, url, error);
+            reject(error);
+          }
+        );
+      });
     };
 
-    loadComponent('./model/1.glb', '屋顶整体');
-    loadComponent('./model/wall.glb', '墙体整体');
-    loadComponent('./model/pillar.glb', '柱子整体');
-    loadComponent('./model/dougong.glb', '斗拱整体');
-    loadComponent('./model/xiangulou.glb', '西安鼓楼');
-    loadComponent('./model/xiaopingfang.glb', '小平房');
+    async function loadLibraryModel(modelItem) {
+      showUploadStatus('模型加载中...', 'loading');
+
+      try {
+        const instanceName = makeUniqueComponentName(modelItem.name);
+        const component = await loadComponent(modelItem.url, instanceName, {
+          baseName: modelItem.name,
+          position: getNextLibrarySpawnPosition()
+        });
+
+        selectComponent(component);
+        closeModelPanel();
+        showUploadStatus('模型加载成功：' + modelItem.name, 'success');
+        hideUploadStatus(1300);
+      } catch (error) {
+        console.error(error);
+        showUploadStatus('模型加载失败，请检查文件名', 'error');
+        hideUploadStatus(1800);
+      }
+    }
+
+    loadComponent('./model/1.glb', '屋顶整体', { baseName: '屋顶整体' }).catch(error => {
+      alert('模型加载失败：屋顶整体，请检查 model/1.glb');
+    });
+    loadComponent('./model/wall.glb', '墙体整体', { baseName: '墙体整体' }).catch(error => {
+      alert('模型加载失败：墙体整体，请检查 model/wall.glb');
+    });
+    loadComponent('./model/pillar.glb', '柱子整体', { baseName: '柱子整体' }).catch(error => {
+      alert('模型加载失败：柱子整体，请检查 model/pillar.glb');
+    });
+    loadComponent('./model/dougong.glb', '斗拱整体', { baseName: '斗拱整体' }).catch(error => {
+      alert('模型加载失败：斗拱整体，请检查 model/dougong.glb');
+    });
+    loadComponent('./model/xiangulou.glb', '西安鼓楼', { baseName: '西安鼓楼' }).catch(error => {
+      alert('模型加载失败：西安鼓楼，请检查 model/xiangulou.glb');
+    });
+    loadComponent('./model/xiaopingfang.glb', '小平房', { baseName: '小平房' }).catch(error => {
+      alert('模型加载失败：小平房，请检查 model/xiaopingfang.glb');
+    });
 
     // ===============================
     // 模型上传按钮：当前仅做界面提示，真实上传功能后期接入
@@ -896,7 +1329,7 @@
 
     function showUploadStatus(message, type) {
       uploadStatus.textContent = message;
-      uploadStatus.classList.remove('loading', 'success');
+      uploadStatus.classList.remove('loading', 'success', 'error');
       uploadStatus.classList.add('show');
 
       if (type) {
@@ -951,7 +1384,7 @@
           await waitForComponentsReady();
 
           const data = JSON.parse(readEvent.target.result);
-          applyLayout(data);
+          await applyLayout(data);
 
           alert('读取成功，可以继续自由编辑');
         } catch (error) {
@@ -978,7 +1411,7 @@
 
       last.forEach(item => {
         const target = window.allComponents.find(
-          m => m.userData.cnName === item.name
+          m => (item.uid && m.userData.uid === item.uid) || m.userData.cnName === item.name
         );
 
         if (target) {
