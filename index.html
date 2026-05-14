@@ -584,7 +584,7 @@
       <div class="preset-title">预设方案库</div>
       <button class="preset-close" id="preset-close">×</button>
     </div>
-    <div class="preset-subtitle">可一键使用模板，也可下载 JSON 后再次导入</div>
+    <div class="preset-subtitle">可一键使用方案一，也可下载 JSON 后再次导入</div>
     <div id="preset-list"></div>
     <div class="panel-tip">
       提示：预设方案只是参考模板，加载后仍可继续拖拽、升降、旋转、缩放和保存。
@@ -685,6 +685,268 @@
     // 4. 你以后可以先手动摆好模型，点击“保存”，再把保存出的 JSON 复制到这里。
     // ===============================
     const PRESET_LIST = [
+      {
+        id: 'scheme_one_sample',
+        name: '方案一：古建集市场景',
+        desc: '由当前示例作品生成的完整搭建模板，适合用户直接套用或下载后再次导入。',
+        meta: '推荐方案',
+        fileName: '方案一_古建集市场景.json',
+        replaceScene: true,
+        layout: [
+          {
+                    "uid": "component-1778765197917-1",
+                    "name": "小平房",
+                    "baseName": "小平房",
+                    "modelUrl": "./model/xiaopingfang.glb",
+                    "pos": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 2.4345651390554774
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.6955901433811449,
+                              "y": 0.6955901433811449,
+                              "z": 0.6955901433811449
+                    }
+          },
+          {
+                    "uid": "component-1778765205884-2",
+                    "name": "古建3",
+                    "baseName": "古建3",
+                    "modelUrl": "./model/gujian3.glb",
+                    "pos": {
+                              "x": -2.18185424924214,
+                              "y": -0.06996294032767758,
+                              "z": 4.883461299999972
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.20947597006314908,
+                              "y": 0.20947597006314908,
+                              "z": 0.20947597006314908
+                    }
+          },
+          {
+                    "uid": "component-1778765211546-3",
+                    "name": "古建4",
+                    "baseName": "古建4",
+                    "modelUrl": "./model/gujian4.glb",
+                    "pos": {
+                              "x": 1.3617275921277976,
+                              "y": 0.36822254945114885,
+                              "z": -8.101590438215634
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.24080466147500204,
+                              "y": 0.24080466147500204,
+                              "z": 0.24080466147500204
+                    }
+          },
+          {
+                    "uid": "component-1778765229954-5",
+                    "name": "古建6",
+                    "baseName": "古建6",
+                    "modelUrl": "./model/gujian6.glb",
+                    "pos": {
+                              "x": 3.5958821089373814,
+                              "y": 0.7912224258734917,
+                              "z": -4.804443100136764
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.24038361860257546,
+                              "y": 0.24038361860257546,
+                              "z": 0.24038361860257546
+                    }
+          },
+          {
+                    "uid": "component-1778765237274-6",
+                    "name": "古建8",
+                    "baseName": "古建8",
+                    "modelUrl": "./model/gujian8.glb",
+                    "pos": {
+                              "x": -4.8777855581011265,
+                              "y": -0.4522954734207072,
+                              "z": -2.3354874124099787
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.3766039602380299,
+                              "y": 0.3766039602380299,
+                              "z": 0.3766039602380299
+                    }
+          },
+          {
+                    "uid": "component-1778765255374-7",
+                    "name": "拱桥",
+                    "baseName": "拱桥",
+                    "modelUrl": "./model/gongqiao.glb",
+                    "pos": {
+                              "x": 0.06530451714208252,
+                              "y": 0.3346855790446357,
+                              "z": -3.5485253701817765
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.15787449512429763,
+                              "y": 0.15787449512429763,
+                              "z": 0.15787449512429763
+                    }
+          },
+          {
+                    "uid": "component-1778765286670-8",
+                    "name": "拱桥2",
+                    "baseName": "拱桥2",
+                    "modelUrl": "./model/guchengjiedao.glb",
+                    "pos": {
+                              "x": -6.063551387000001,
+                              "y": 1.4845189845549494,
+                              "z": 5.670865298805305
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 2.2250054203957386,
+                              "y": 2.2250054203957386,
+                              "z": 2.2250054203957386
+                    }
+          },
+          {
+                    "uid": "component-1778765312221-9",
+                    "name": "古代建筑集市",
+                    "baseName": "古代建筑集市",
+                    "modelUrl": "./model/gusaijianzhujishi.glb",
+                    "pos": {
+                              "x": 5.596657907409805,
+                              "y": 1.8263659594121109,
+                              "z": 2.01657550637484
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 1.5707963267948966,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 4.160164085402861,
+                              "y": 4.160164085402861,
+                              "z": 4.160164085402861
+                    }
+          },
+          {
+                    "uid": "component-1778765360203-10",
+                    "name": "集市",
+                    "baseName": "集市",
+                    "modelUrl": "./model/jishi.glb",
+                    "pos": {
+                              "x": 1.2952492052978446,
+                              "y": 3.0350560387798486,
+                              "z": 7.331315689923023
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 1.5707963267948966,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 1.2760854458916921,
+                              "y": 1.2760854458916921,
+                              "z": 1.2760854458916921
+                    }
+          },
+          {
+                    "uid": "component-1778765536341-12",
+                    "name": "家具1",
+                    "baseName": "家具1",
+                    "modelUrl": "./model/furniture1.glb",
+                    "pos": {
+                              "x": 1.161315728199647,
+                              "y": 0.0005011484191639061,
+                              "z": -0.25684438987355107
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 0.685579057235845,
+                              "y": 0.685579057235845,
+                              "z": 0.685579057235845
+                    }
+          },
+          {
+                    "uid": "component-1778765615568-14",
+                    "name": "新年装饰",
+                    "baseName": "新年装饰",
+                    "modelUrl": "./model/xinianzhuangshi.glb",
+                    "pos": {
+                              "x": 2.0679518973847717,
+                              "y": 2.38573055943252,
+                              "z": -3.2365780795383454
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 1.5707963267948966,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 1.5199437051669735,
+                              "y": 1.5199437051669735,
+                              "z": 1.5199437051669735
+                    }
+          },
+          {
+                    "uid": "component-1778765651047-15",
+                    "name": "新年装饰-2",
+                    "baseName": "新年装饰",
+                    "modelUrl": "./model/xinianzhuangshi.glb",
+                    "pos": {
+                              "x": -3.251911757008232,
+                              "y": 5.088671826029722,
+                              "z": 5.510002346369619
+                    },
+                    "rot": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                    },
+                    "sca": {
+                              "x": 1.5199437051669735,
+                              "y": 1.5199437051669735,
+                              "z": 1.5199437051669735
+                    }
+          }
+]
+      },
       {
         id: 'single_house',
         name: '单房展示方案',
@@ -803,6 +1065,58 @@
       }
     ];
 
+
+    function findModelConfig(modelUrl, name) {
+      for (const group of MODEL_LIBRARY) {
+        const found = group.models.find(item =>
+          item.url === modelUrl ||
+          item.name === name
+        );
+
+        if (found) {
+          return found;
+        }
+      }
+
+      return null;
+    }
+
+    async function replaceSceneWithLayout(layoutData) {
+      recordState();
+      clearSelection();
+
+      [...window.allComponents].forEach(component => {
+        removeComponent(component);
+      });
+
+      for (const savedItem of layoutData) {
+        if (!savedItem.modelUrl) {
+          continue;
+        }
+
+        const config = findModelConfig(
+          savedItem.modelUrl,
+          savedItem.baseName || savedItem.name
+        );
+
+        try {
+          const component = await loadComponent(savedItem.modelUrl, savedItem.name, {
+            uid: savedItem.uid || createComponentUid(),
+            baseName: savedItem.baseName || savedItem.name,
+            targetSize: savedItem.targetSize || config?.targetSize || 3
+          });
+
+          component.position.set(savedItem.pos.x, savedItem.pos.y, savedItem.pos.z);
+          component.rotation.set(savedItem.rot.x, savedItem.rot.y, savedItem.rot.z);
+          component.scale.set(savedItem.sca.x, savedItem.sca.y, savedItem.sca.z);
+        } catch (error) {
+          console.error('预设方案模型加载失败：', savedItem, error);
+        }
+      }
+
+      clearSelection();
+    }
+
     // ===============================
     // 工具函数
     // ===============================
@@ -812,6 +1126,7 @@
         name: m.userData.cnName,
         baseName: m.userData.baseName || m.userData.cnName,
         modelUrl: m.userData.modelUrl || '',
+        targetSize: m.userData.targetSize || undefined,
         pos: { x: m.position.x, y: m.position.y, z: m.position.z },
         rot: { x: m.rotation.x, y: m.rotation.y, z: m.rotation.z },
         sca: { x: m.scale.x, y: m.scale.y, z: m.scale.z }
@@ -905,9 +1220,15 @@
         // 如果是从模型库新增后保存的模型，而当前场景里还没有，则根据 modelUrl 自动重新加载。
         if (!component && savedItem.modelUrl) {
           try {
+            const config = findModelConfig(
+              savedItem.modelUrl,
+              savedItem.baseName || savedItem.name
+            );
+
             component = await loadComponent(savedItem.modelUrl, savedItem.name, {
               baseName: savedItem.baseName || savedItem.name,
-              uid: savedItem.uid || createComponentUid()
+              uid: savedItem.uid || createComponentUid(),
+              targetSize: savedItem.targetSize || config?.targetSize || 3
             });
           } catch (error) {
             console.error('布局中的模型加载失败：', savedItem, error);
@@ -1125,7 +1446,13 @@
 
         useBtn.onclick = async () => {
           await waitForComponentsReady();
-          await applyLayout(preset.layout);
+
+          if (preset.replaceScene) {
+            await replaceSceneWithLayout(preset.layout);
+          } else {
+            await applyLayout(preset.layout);
+          }
+
           closePresetPanel();
           alert('已加载：' + preset.name + '，现在可以继续自由编辑');
         };
@@ -1445,6 +1772,7 @@
             root.userData.cnName = cnName;
             root.userData.baseName = options.baseName || cnName;
             root.userData.modelUrl = url;
+            root.userData.targetSize = options.targetSize || 3;
 
             // 关键修改：所有模型加载后自动居中、缩放、落地
             normalizeModel(root, options.targetSize || 3);
