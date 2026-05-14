@@ -621,11 +621,8 @@
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-    import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-    import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
     import { DragControls } from 'three/examples/jsm/controls/DragControls.js';
-    import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
     // ===============================
     // 初始化场景
@@ -742,29 +739,48 @@
       {
         category: '基础构件',
         models: [
-          { name: '墙体整体', desc: '基础墙体构件', url: './model/wall.glb' },
-          { name: '柱子整体', desc: '基础柱类构件', url: './model/pillar.glb' },
-          { name: '斗拱整体', desc: '基础斗拱构件', url: './model/dougong.glb' }
+          { name: '墙体整体', desc: '基础墙体构件', url: './model/wall.glb', targetSize: 3 },
+          { name: '柱子整体', desc: '基础柱类构件', url: './model/pillar.glb', targetSize: 3 },
+          { name: '斗拱整体', desc: '基础斗拱构件', url: './model/dougong.glb', targetSize: 3 }
         ]
       },
       {
-        category: '古建筑模型',
+        category: '房屋与建筑主体',
         models: [
-          { name: '小平房', desc: '简易房屋参考模型', url: './model/xiaopingfang.glb' },
+          { name: '小平房', desc: '简易房屋参考模型', url: './model/xiaopingfang.glb', targetSize: 5 },
+          { name: '复古建筑1', desc: '复古风格建筑模型', url: './model/fugu.glb', targetSize: 5 },
+          { name: '复古建筑2', desc: '复古风格建筑模型', url: './model/fugu2.glb', targetSize: 5 },
+          { name: '古代游戏建筑', desc: '古代风格游戏建筑模型', url: './model/gudaiyouxijianzhu.glb', targetSize: 6 }
+        ]
+      },
+      {
+        category: '古建系列',
+        models: [
           { name: '古建3', desc: '古建筑组合模型', url: './model/gujian3.glb', targetSize: 5 },
           { name: '古建4', desc: '古建筑组合模型', url: './model/gujian4.glb', targetSize: 5 },
           { name: '古建5', desc: '古建筑组合模型', url: './model/gujian5.glb', targetSize: 5 },
           { name: '古建6', desc: '古建筑组合模型', url: './model/gujian6.glb', targetSize: 5 },
-          { name: '古建7', desc: '古建筑组合模型', url: './model/gujian7.glb', targetSize: 5 }
+          { name: '古建8', desc: '古建筑组合模型', url: './model/gujian8.glb', targetSize: 5 },
+          { name: '古建9', desc: '古建筑组合模型', url: './model/gujian9.glb', targetSize: 5 }
         ]
       },
       {
-        category: '装饰与家具',
+        category: '街道、集市与牌坊',
         models: [
-          { name: '家具', desc: '室内或场景陈设模型', url: './model/furniture1.glb' },
-          { name: '墙体装饰', desc: '可用于围合或背景装饰', url: './model/wall.glb' },
-          { name: '斗拱装饰', desc: '装饰性斗拱模型', url: './model/dougong.glb' },
-          { name: '柱子装饰', desc: '装饰性柱类模型', url: './model/pillar.glb' }
+          { name: '拱桥', desc: '场景桥梁模型', url: './model/gongqiao.glb', targetSize: 5 },
+          { name: '古城街道', desc: '古城街道场景模型', url: './model/guchengjiedao.glb', targetSize: 7 },
+          { name: '古代建筑集市', desc: '古代建筑集市组合场景', url: './model/gusaijianzhujishi.glb', targetSize: 7 },
+          { name: '集市', desc: '集市场景模型', url: './model/jishi.glb', targetSize: 6 },
+          { name: '牌坊', desc: '传统牌坊模型', url: './model/paifang.glb', targetSize: 5 }
+        ]
+      },
+      {
+        category: '家具与装饰',
+        models: [
+          { name: '家具1', desc: '室内或场景陈设模型', url: './model/furniture1.glb', targetSize: 3 },
+          { name: '家具2', desc: '室内或场景陈设模型', url: './model/furniture2.glb', targetSize: 3 },
+          { name: '家具旧版', desc: '旧版家具模型，可用于补充场景', url: './model/funniture1.glb', targetSize: 3 },
+          { name: '新年装饰', desc: '节庆装饰模型', url: './model/xinianzhuangshi.glb', targetSize: 4 }
         ]
       }
     ];
@@ -1281,23 +1297,8 @@
 
     // ===============================
     // 加载构件模型
-    // 兼容说明：
-    // 有些 GLB 虽然用户没有主动压缩，但模型来源本身可能已经包含 Draco、Meshopt 或 KTX2 贴图扩展。
-    // 普通 GLTFLoader 遇到这些扩展会加载失败，所以这里统一加入解码器。
     // ===============================
     const loader = new GLTFLoader();
-
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/libs/draco/');
-    loader.setDRACOLoader(dracoLoader);
-
-    const ktx2Loader = new KTX2Loader();
-    ktx2Loader.setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.158/examples/jsm/libs/basis/');
-    ktx2Loader.detectSupport(renderer);
-    loader.setKTX2Loader(ktx2Loader);
-
-    loader.setMeshoptDecoder(MeshoptDecoder);
-
     let componentUidCounter = 0;
     let librarySpawnIndex = 0;
 
@@ -1359,37 +1360,6 @@
       root.updateWorldMatrix(true, true);
       const groundBox = new THREE.Box3().setFromObject(root);
       root.position.y -= groundBox.min.y;
-    }
-
-    function getFriendlyLoadError(error) {
-      const message = String(
-        error?.message ||
-        error?.target?.statusText ||
-        error ||
-        '未知错误'
-      );
-
-      if (message.includes('Unexpected token') || message.includes('404')) {
-        return '路径错误或文件未同步';
-      }
-
-      if (message.includes('DRACOLoader') || message.includes('KHR_draco_mesh_compression')) {
-        return '模型需要 Draco 解码器';
-      }
-
-      if (message.includes('MeshoptDecoder') || message.includes('EXT_meshopt_compression')) {
-        return '模型需要 Meshopt 解码器';
-      }
-
-      if (message.includes('KTX2Loader') || message.includes('KHR_texture_basisu')) {
-        return '模型贴图需要 KTX2 解码器';
-      }
-
-      if (message.includes('Invalid') || message.includes('glTF') || message.includes('GLB')) {
-        return '模型文件格式异常';
-      }
-
-      return '模型文件无法解析';
     }
 
     const loadComponent = (url, cnName, options = {}) => {
@@ -1458,9 +1428,8 @@
         hideUploadStatus(1300);
       } catch (error) {
         console.error(error);
-        const reason = getFriendlyLoadError(error);
-        showUploadStatus('模型加载失败：' + reason, 'error');
-        hideUploadStatus(2600);
+        showUploadStatus('模型加载失败，请检查文件名', 'error');
+        hideUploadStatus(1800);
       }
     }
 
