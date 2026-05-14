@@ -121,6 +121,19 @@
       background: rgba(52, 199, 89, 0.34);
     }
 
+    .btn-multi {
+      background: rgba(175, 82, 222, 0.34);
+    }
+
+    .btn-multi.active {
+      background: rgba(175, 82, 222, 0.72);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+
+    .btn-delete {
+      background: rgba(255, 59, 48, 0.36);
+    }
+
     .upload-status {
       position: absolute;
       top: 92px;
@@ -534,7 +547,7 @@
 </head>
 
 <body>
-  <div class="ui-tips">用户自主DIY搭建：可自由编辑，也可使用/下载预设方案</div>
+  <div class="ui-tips">用户自主DIY搭建：可自由编辑、按需加载模型，并支持多选删除</div>
 
   <div class="address-bar">
     <input type="text" id="save-path" placeholder="输入保存的文件名" value="我的建筑设计_1">
@@ -580,6 +593,8 @@
   <div class="system-box">
     <div class="btn btn-sys btn-open" id="open-btn">📂<span>打开</span></div>
     <div class="btn btn-sys btn-upload" id="upload-btn">⬆️<span>上传</span></div>
+    <div class="btn btn-sys btn-multi" id="multi-btn">☑<span>多选</span></div>
+    <div class="btn btn-sys btn-delete" id="delete-btn">🗑<span>删除</span></div>
     <div class="btn btn-sys" id="undo-btn">↶<span>撤回</span></div>
     <div class="btn btn-sys" id="save-btn">💾<span>保存</span></div>
     <div class="btn btn-sys" id="reset-btn">🔄<span>重置</span></div>
@@ -637,8 +652,9 @@
     window.allComponents = [];
     const activeSelection = [];
     let currentSelected = null;
+    let multiSelectMode = false;
     const historyStack = [];
-    const EXPECTED_COMPONENT_COUNT = 6;
+    const EXPECTED_COMPONENT_COUNT = 1;
 
     // ===============================
     // 预设方案数据
@@ -650,90 +666,17 @@
     // ===============================
     const PRESET_LIST = [
       {
-        id: 'gulou_basic',
-        name: '鼓楼基础方案',
-        desc: '适合初学者参考的古建筑组合模板，加载后可继续自由修改。',
-        meta: '古建筑参考',
-        fileName: '鼓楼基础方案.json',
+        id: 'single_house',
+        name: '单房展示方案',
+        desc: '打开后只保留一个小平房，适合作为最简洁的起始界面。',
+        meta: '默认方案',
+        fileName: '单房展示方案.json',
         layout: [
           {
-            name: '屋顶整体',
-            pos: { x: 0, y: 3.2, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 1, y: 1, z: 1 }
-          },
-          {
-            name: '墙体整体',
-            pos: { x: 0, y: 1.2, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 1, y: 1, z: 1 }
-          },
-          {
-            name: '柱子整体',
-            pos: { x: -2.2, y: 0, z: -2.2 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 1, y: 1, z: 1 }
-          },
-          {
-            name: '斗拱整体',
-            pos: { x: -2.2, y: 2.1, z: -2.2 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 1, y: 1, z: 1 }
-          },
-          {
-            name: '西安鼓楼',
-            pos: { x: 3.8, y: 0, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.8, y: 0.8, z: 0.8 }
-          },
-          {
             name: '小平房',
-            pos: { x: -4.0, y: 0, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.75, y: 0.75, z: 0.75 }
-          }
-        ]
-      },
-      {
-        id: 'house_basic',
-        name: '小平房方案',
-        desc: '更简单的房屋组合模板，适合快速进入 DIY 编辑状态。',
-        meta: '入门模板',
-        fileName: '小平房方案.json',
-        layout: [
-          {
-            name: '屋顶整体',
-            pos: { x: 0, y: 2.5, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.8, y: 0.8, z: 0.8 }
-          },
-          {
-            name: '墙体整体',
-            pos: { x: 0, y: 1.0, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.8, y: 0.8, z: 0.8 }
-          },
-          {
-            name: '柱子整体',
-            pos: { x: -1.6, y: 0, z: -1.6 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.7, y: 0.7, z: 0.7 }
-          },
-          {
-            name: '斗拱整体',
-            pos: { x: -1.6, y: 1.75, z: -1.6 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.7, y: 0.7, z: 0.7 }
-          },
-          {
-            name: '西安鼓楼',
-            pos: { x: 4.0, y: 0, z: 0 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.6, y: 0.6, z: 0.6 }
-          },
-          {
-            name: '小平房',
-            pos: { x: 0, y: 0, z: 3.5 },
+            baseName: '小平房',
+            modelUrl: './model/xiaopingfang.glb',
+            pos: { x: 0, y: 0, z: 0 },
             rot: { x: 0, y: 0, z: 0 },
             sca: { x: 1, y: 1, z: 1 }
           }
@@ -742,45 +685,41 @@
       {
         id: 'free_start',
         name: '自由搭建起始方案',
-        desc: '把所有构件分散摆开，方便用户从零开始选择和拼装。',
+        desc: '加载几个可用构件分散摆放，便于用户从零开始 DIY。',
         meta: '自由创作',
         fileName: '自由搭建起始方案.json',
         layout: [
           {
-            name: '屋顶整体',
-            pos: { x: -4, y: 0, z: -3 },
+            name: '小平房',
+            baseName: '小平房',
+            modelUrl: './model/xiaopingfang.glb',
+            pos: { x: -3.0, y: 0, z: 0 },
             rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.8, y: 0.8, z: 0.8 }
+            sca: { x: 0.9, y: 0.9, z: 0.9 }
           },
           {
             name: '墙体整体',
-            pos: { x: 0, y: 0, z: -3 },
+            baseName: '墙体整体',
+            modelUrl: './model/wall.glb',
+            pos: { x: 1.5, y: 0, z: -2.2 },
             rot: { x: 0, y: 0, z: 0 },
             sca: { x: 0.8, y: 0.8, z: 0.8 }
           },
           {
             name: '柱子整体',
-            pos: { x: 4, y: 0, z: -3 },
+            baseName: '柱子整体',
+            modelUrl: './model/pillar.glb',
+            pos: { x: 3.5, y: 0, z: -2.2 },
             rot: { x: 0, y: 0, z: 0 },
             sca: { x: 0.8, y: 0.8, z: 0.8 }
           },
           {
             name: '斗拱整体',
-            pos: { x: -4, y: 0, z: 2.5 },
+            baseName: '斗拱整体',
+            modelUrl: './model/dougong.glb',
+            pos: { x: 3.5, y: 0, z: 1.0 },
             rot: { x: 0, y: 0, z: 0 },
             sca: { x: 0.8, y: 0.8, z: 0.8 }
-          },
-          {
-            name: '西安鼓楼',
-            pos: { x: 0, y: 0, z: 2.5 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.7, y: 0.7, z: 0.7 }
-          },
-          {
-            name: '小平房',
-            pos: { x: 4, y: 0, z: 2.5 },
-            rot: { x: 0, y: 0, z: 0 },
-            sca: { x: 0.7, y: 0.7, z: 0.7 }
           }
         ]
       }
@@ -800,7 +739,6 @@
       {
         category: '基础构件',
         models: [
-          { name: '屋顶整体', desc: '基础屋顶构件', url: './model/1.glb' },
           { name: '墙体整体', desc: '基础墙体构件', url: './model/wall.glb' },
           { name: '柱子整体', desc: '基础柱类构件', url: './model/pillar.glb' },
           { name: '斗拱整体', desc: '基础斗拱构件', url: './model/dougong.glb' }
@@ -809,7 +747,6 @@
       {
         category: '古建筑模型',
         models: [
-          { name: '西安鼓楼', desc: '完整古建筑参考模型', url: './model/xiangulou.glb' },
           { name: '小平房', desc: '简易房屋参考模型', url: './model/xiaopingfang.glb' },
           { name: '古建3', desc: '古建筑组合模型', url: './model/gujian3.glb' },
           { name: '古建4', desc: '古建筑组合模型', url: './model/gujian4.glb' },
@@ -845,18 +782,50 @@
     }
 
     function recordState() {
-      const state = window.allComponents.map(m => ({
-        uid: m.userData.uid || '',
-        name: m.userData.cnName,
-        pos: m.position.clone(),
-        rot: m.rotation.clone(),
-        sca: m.scale.clone()
-      }));
-
+      const state = getLayoutData();
       historyStack.push(state);
 
       if (historyStack.length > 20) {
         historyStack.shift();
+      }
+    }
+
+    async function restoreState(state) {
+      clearSelection();
+
+      const keepUids = new Set(state.map(item => item.uid).filter(Boolean));
+      const toRemove = window.allComponents.filter(component => {
+        const uid = component.userData.uid || '';
+        return uid && !keepUids.has(uid);
+      });
+
+      toRemove.forEach(component => {
+        removeComponent(component);
+      });
+
+      for (const item of state) {
+        let target = null;
+
+        if (item.uid) {
+          target = window.allComponents.find(component => component.userData.uid === item.uid);
+        }
+
+        if (!target && item.modelUrl) {
+          try {
+            target = await loadComponent(item.modelUrl, item.name, {
+              uid: item.uid || createComponentUid(),
+              baseName: item.baseName || item.name
+            });
+          } catch (error) {
+            console.error('撤回时模型恢复失败：', item, error);
+          }
+        }
+
+        if (target) {
+          target.position.set(item.pos.x, item.pos.y, item.pos.z);
+          target.rotation.set(item.rot.x, item.rot.y, item.rot.z);
+          target.scale.set(item.sca.x, item.sca.y, item.sca.z);
+        }
       }
     }
 
@@ -954,6 +923,54 @@
       URL.revokeObjectURL(url);
     }
 
+    function disposeComponent(component) {
+      component.traverse(node => {
+        if (!node.isMesh) return;
+
+        if (node.geometry) {
+          node.geometry.dispose();
+        }
+
+        const materials = Array.isArray(node.material)
+          ? node.material
+          : [node.material];
+
+        materials.forEach(material => {
+          if (!material) return;
+
+          Object.keys(material).forEach(key => {
+            const value = material[key];
+            if (value && value.isTexture) {
+              value.dispose();
+            }
+          });
+
+          if (material.dispose) {
+            material.dispose();
+          }
+        });
+      });
+    }
+
+    function removeComponent(component) {
+      scene.remove(component);
+      disposeComponent(component);
+
+      const index = window.allComponents.indexOf(component);
+      if (index !== -1) {
+        window.allComponents.splice(index, 1);
+      }
+
+      const selectedIndex = activeSelection.indexOf(component);
+      if (selectedIndex !== -1) {
+        activeSelection.splice(selectedIndex, 1);
+      }
+
+      if (currentSelected === component) {
+        currentSelected = activeSelection[activeSelection.length - 1] || null;
+      }
+    }
+
     function setHighlight(target, color) {
       target.traverse(node => {
         if (!node.isMesh || !node.material) return;
@@ -970,32 +987,79 @@
       });
     }
 
+    function updateSelectionView() {
+      window.allComponents.forEach(component => {
+        setHighlight(
+          component,
+          activeSelection.includes(component) ? 0x332222 : 0x000000
+        );
+      });
+
+      const tag = document.getElementById('select-tag');
+
+      if (activeSelection.length === 0) {
+        tag.style.display = 'none';
+        currentSelected = null;
+        return;
+      }
+
+      if (activeSelection.length === 1) {
+        currentSelected = activeSelection[0];
+        tag.innerText = '选中：' + currentSelected.userData.cnName;
+      } else {
+        currentSelected = activeSelection[activeSelection.length - 1];
+        tag.innerText = '已选中 ' + activeSelection.length + ' 个模型，可点击删除';
+      }
+
+      tag.style.display = 'block';
+    }
+
     function clearSelection() {
       currentSelected = null;
       activeSelection.length = 0;
-
-      window.allComponents.forEach(component => {
-        setHighlight(component, 0x000000);
-      });
-
-      document.getElementById('select-tag').style.display = 'none';
+      updateSelectionView();
     }
 
     function selectComponent(target) {
-      currentSelected = target;
       activeSelection.length = 0;
       activeSelection.push(target);
+      currentSelected = target;
+      updateSelectionView();
+    }
 
-      window.allComponents.forEach(component => {
-        setHighlight(component, 0x000000);
-      });
+    function toggleComponentSelection(target) {
+      const index = activeSelection.indexOf(target);
 
-      setHighlight(target, 0x221111);
+      if (index === -1) {
+        activeSelection.push(target);
+        currentSelected = target;
+      } else {
+        activeSelection.splice(index, 1);
+        currentSelected = activeSelection[activeSelection.length - 1] || null;
+      }
 
-      document.getElementById('select-tag').innerText =
-        '选中：' + target.userData.cnName;
+      updateSelectionView();
+    }
 
-      document.getElementById('select-tag').style.display = 'block';
+    function getSelectedComponents() {
+      if (activeSelection.length > 0) {
+        return [...activeSelection];
+      }
+
+      return currentSelected ? [currentSelected] : [];
+    }
+
+    function applyToSelected(callback) {
+      const selected = getSelectedComponents();
+
+      if (selected.length === 0) {
+        alert('请先选中一个模型');
+        return;
+      }
+
+      recordState();
+      selected.forEach(callback);
+      updateSelectionView();
     }
 
     // ===============================
@@ -1201,7 +1265,11 @@
         }
 
         if (window.allComponents.includes(target)) {
-          selectComponent(target);
+          if (multiSelectMode || event.ctrlKey || event.shiftKey) {
+            toggleComponentSelection(target);
+          } else {
+            selectComponent(target);
+          }
         }
       } else {
         clearSelection();
@@ -1284,6 +1352,7 @@
       showUploadStatus('模型加载中...', 'loading');
 
       try {
+        recordState();
         const instanceName = makeUniqueComponentName(modelItem.name);
         const component = await loadComponent(modelItem.url, instanceName, {
           baseName: modelItem.name,
@@ -1301,22 +1370,12 @@
       }
     }
 
-    loadComponent('./model/1.glb', '屋顶整体', { baseName: '屋顶整体' }).catch(error => {
-      alert('模型加载失败：屋顶整体，请检查 model/1.glb');
-    });
-    loadComponent('./model/wall.glb', '墙体整体', { baseName: '墙体整体' }).catch(error => {
-      alert('模型加载失败：墙体整体，请检查 model/wall.glb');
-    });
-    loadComponent('./model/pillar.glb', '柱子整体', { baseName: '柱子整体' }).catch(error => {
-      alert('模型加载失败：柱子整体，请检查 model/pillar.glb');
-    });
-    loadComponent('./model/dougong.glb', '斗拱整体', { baseName: '斗拱整体' }).catch(error => {
-      alert('模型加载失败：斗拱整体，请检查 model/dougong.glb');
-    });
-    loadComponent('./model/xiangulou.glb', '西安鼓楼', { baseName: '西安鼓楼' }).catch(error => {
-      alert('模型加载失败：西安鼓楼，请检查 model/xiangulou.glb');
-    });
-    loadComponent('./model/xiaopingfang.glb', '小平房', { baseName: '小平房' }).catch(error => {
+    // 初始场景只保留一个房子，其他模型由用户通过“模型库”按需加载。
+    loadComponent('./model/xiaopingfang.glb', '小平房', {
+      baseName: '小平房',
+      position: new THREE.Vector3(0, 0, 0),
+      scale: new THREE.Vector3(1, 1, 1)
+    }).catch(error => {
       alert('模型加载失败：小平房，请检查 model/xiaopingfang.glb');
     });
 
@@ -1340,7 +1399,7 @@
     function hideUploadStatus(delay = 1200) {
       clearTimeout(uploadTimer);
       uploadTimer = setTimeout(() => {
-        uploadStatus.classList.remove('show', 'loading', 'success');
+        uploadStatus.classList.remove('show', 'loading', 'success', 'error');
       }, delay);
     }
 
@@ -1352,6 +1411,45 @@
         showUploadStatus('模型上传成功', 'success');
         hideUploadStatus(1300);
       }, 1200);
+    };
+
+    const multiBtn = document.getElementById('multi-btn');
+    const deleteBtn = document.getElementById('delete-btn');
+
+    multiBtn.onclick = () => {
+      multiSelectMode = !multiSelectMode;
+      multiBtn.classList.toggle('active', multiSelectMode);
+
+      if (multiSelectMode) {
+        showUploadStatus('多选模式已开启：可连续点击多个模型', 'loading');
+      } else {
+        showUploadStatus('多选模式已关闭', 'success');
+      }
+
+      hideUploadStatus(1200);
+    };
+
+    deleteBtn.onclick = () => {
+      const selected = getSelectedComponents();
+
+      if (selected.length === 0) {
+        alert('请先选中要删除的模型。需要多选时，先点“多选”按钮，再连续点击多个模型。');
+        return;
+      }
+
+      if (!confirm('确定删除已选中的 ' + selected.length + ' 个模型吗？')) {
+        return;
+      }
+
+      recordState();
+
+      selected.forEach(component => {
+        removeComponent(component);
+      });
+
+      clearSelection();
+      showUploadStatus('已删除 ' + selected.length + ' 个模型', 'success');
+      hideUploadStatus(1300);
     };
 
     // ===============================
@@ -1401,25 +1499,14 @@
     // ===============================
     // 撤回
     // ===============================
-    document.getElementById('undo-btn').onclick = () => {
+    document.getElementById('undo-btn').onclick = async () => {
       if (historyStack.length === 0) {
         alert('没有可撤回的操作');
         return;
       }
 
       const last = historyStack.pop();
-
-      last.forEach(item => {
-        const target = window.allComponents.find(
-          m => (item.uid && m.userData.uid === item.uid) || m.userData.cnName === item.name
-        );
-
-        if (target) {
-          target.position.copy(item.pos);
-          target.rotation.copy(item.rot);
-          target.scale.copy(item.sca);
-        }
-      });
+      await restoreState(last);
     };
 
     // ===============================
@@ -1445,38 +1532,33 @@
     const step = 0.2;
 
     document.getElementById('up-btn').onclick = () => {
-      if (currentSelected) {
-        recordState();
-        currentSelected.position.y += step;
-      }
+      applyToSelected(component => {
+        component.position.y += step;
+      });
     };
 
     document.getElementById('down-btn').onclick = () => {
-      if (currentSelected) {
-        recordState();
-        currentSelected.position.y -= step;
-      }
+      applyToSelected(component => {
+        component.position.y -= step;
+      });
     };
 
     document.getElementById('rotate-btn').onclick = () => {
-      if (currentSelected) {
-        recordState();
-        currentSelected.rotation.y += Math.PI / 2;
-      }
+      applyToSelected(component => {
+        component.rotation.y += Math.PI / 2;
+      });
     };
 
     document.getElementById('plus-btn').onclick = () => {
-      if (currentSelected) {
-        recordState();
-        currentSelected.scale.multiplyScalar(1.1);
-      }
+      applyToSelected(component => {
+        component.scale.multiplyScalar(1.1);
+      });
     };
 
     document.getElementById('minus-btn').onclick = () => {
-      if (currentSelected) {
-        recordState();
-        currentSelected.scale.divideScalar(1.1);
-      }
+      applyToSelected(component => {
+        component.scale.divideScalar(1.1);
+      });
     };
 
     // ===============================
